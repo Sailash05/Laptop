@@ -5,8 +5,8 @@ pipeline {
     stages {
 
         stage('Build') {
-            steps {
-                dir('D:\\System Software\\Eclipse-workspace\\Calculator') {
+            steps {C:\Users\ssail\eclipse-workspace\Laptop
+                dir('C:\\Users\\ssail\\Eclipse-workspace\\Laptop') {
                     bat 'mvn clean verify'
                 }
             }
@@ -14,11 +14,11 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                dir('D:\\System Software\\Eclipse-workspace\\Calculator') {
+                dir('C:\\Users\\ssail\\Eclipse-workspace\\Laptop') {
                     withSonarQubeEnv('LocalSonarQube') {
                         bat '''
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar ^
-                            -Dsonar.projectKey=Calculator
+                            -Dsonar.projectKey=Laptop
                         '''
                     }
                 }

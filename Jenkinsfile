@@ -1,47 +1,38 @@
+
 pipeline {
     agent any
 
     stages {
 
-        stage('Checkout') {
+        stage('Build') {
             steps {
-                echo 'Fetching source code from GitHub'
-                checkout scm
+                dir('D:\\System Software\\Eclipse-workspace\\Calculator') {
+                    bat 'mvn clean verify'
+                }
             }
         }
 
-        stage('Clean') {
+        stage('SonarQube Analysis') {
             steps {
-                bat 'mvn clean'
+                dir('D:\\System Software\\Eclipse-workspace\\Calculator') {
+                    withSonarQubeEnv('LocalSonarQube') {
+                        bat '''
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar ^
+                            -Dsonar.projectKey=Calculator
+                        '''
+                    }
+                }
             }
         }
 
-        stage('Compile') {
+        stage('Quality Gate') {
             steps {
-                bat 'mvn compile'
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate(
+                        abortPipeline: true
+                    )
+                }
             }
-        }
-
-        stage('Test') {
-            steps {
-                bat 'mvn test'
-            }
-        }
-
-        stage('Package') {
-            steps {
-                bat 'mvn package'
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'BUILD SUCCESSFUL!'
-        }
-
-        failure {
-            echo 'BUILD FAILED!'
         }
     }
 }

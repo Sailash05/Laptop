@@ -11,7 +11,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('LocalSonarQube') {
+                withSonarQubeEnv('LocalServerSonar') {
                     bat '''
                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar ^
                         -Dsonar.projectKey=Laptop

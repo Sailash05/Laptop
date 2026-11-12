@@ -3,16 +3,15 @@ pipeline {
     agent any
 
     stages {
-
-        stage('Build') {
+        stage('Clean and Compile') {
             steps {
-                bat 'mvn clean verify'
+                bat 'mvn clean compile'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('LocalServerSonar') {
+                withSonarQubeEnv('LocalSonarQube') {
                     bat '''
                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar ^
                         -Dsonar.projectKey=Laptop
@@ -24,10 +23,14 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate(
-                        abortPipeline: true
-                    )
+                    waitForQualityGate(abortPipeline: true)
                 }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                bat 'mvn package'
             }
         }
     }
